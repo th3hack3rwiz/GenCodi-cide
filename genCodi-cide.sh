@@ -17,11 +17,21 @@ RED='\e[38;5;196m'
 
 function usage()
 {
-	echo -e "${PINK}\n[+] Usage:\n\t./generatecodes  <length of alpha-num strings> <number of reps per key> <length of dashes>"	
+	echo -e "${PINK}\n[+] Usage:\n\t./genCodi-cide.sh  -s <size of each code> -r <number of reps per key> -d <length of dashes in b/w codes> <mode>"	
 	echo -e "${GREEN} -d : to specify number of dashes between codes"
 	echo -e "${GREEN} -s : to specify the size of one entity of code"
 	echo -e "${GREEN} -r : to specify the number of reps"
-	echo -e "${GREEN}  Eg: ./generatecodes -s 4 -r 3 -d 1 will generate 'XXXX-XXXX-XXXX'"
+	echo -e "${GREEN}  Eg: ./generatecodes -s 4 -r 3 -d 1 E will generate 'XXXX-XXXX-XXXX' where X:'Some lowercase letter'\n"
+}
+function menu()
+{
+	echo "[+] Use any one of the 'modes' to generate codes"
+	echo -e "\tA - alpha-num"
+	echo -e "\tB - hexadecimal"
+	echo -e "\tC - APLHA-NUM"
+	echo -e "\tD - NUM"
+	echo -e "\tE - alpha"
+	echo -e "\tF - ALPHA"
 }
 
 while getopts :d:s:r: fuzz_args; do 
@@ -36,14 +46,46 @@ while getopts :d:s:r: fuzz_args; do
 			;;
 		*)
 			usage
+			menu
 			exit 1
 			;;
 	esac
 done
 shift $((OPTIND-1))
 
+test=$1
+case $test in
 
-crunch $size $size ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 > wd
+  'A')
+    str="abcdefghijklmnopqrstuvwxyz1234567890"
+    ;;
+
+  'B')
+    str="ABCDEF123456"
+    ;;
+
+  'C')
+    str="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    ;;
+
+  'D')
+    str='1234567890'
+    ;;
+
+  'E')
+    str='abcdefghijklmnopqrstuvwxyz'
+    ;;
+
+  'F')
+    str="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ;;
+
+  *)
+    echo Wrong option!
+    ;;
+esac
+
+crunch $size $size $str -o wd >/dev/null 2>&1
 myString=$(printf "%$(echo $number)s");dashes=$(echo ${myString// /-} );
 cat wd | shuf | xargs -n $reps  | sed "s/\ /$dashes/g" 
 rm wd
